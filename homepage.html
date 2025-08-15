@@ -1,0 +1,277 @@
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Learning Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+      li, a {
+        text-decoration: none;
+        color: white;
+      }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+
+      /* Layout structure */
+      .container-fluid {
+        display: flex;
+        height: 100vh;
+        flex-direction: column;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background-color: #333;
+        color: #fff;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        overflow-y: auto;
+      }
+
+      .sidebar ul {
+        padding: 0;
+        list-style: none;
+        margin-top: 80px; /* To accommodate the fixed header */
+      }
+
+      .sidebar ul li {
+        padding: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .sidebar ul li:hover {
+        background-color: #444;
+      }
+
+      .sidebar ul li i {
+        margin-right: 10px;
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 250px;
+        padding-top: 80px; /* To accommodate the fixed header */
+        padding-bottom: 60px; /* To accommodate the fixed footer */
+        overflow-y: auto;
+        flex-grow: 1;
+      }
+
+      /* Fixed Header */
+      .header {
+        position: fixed;
+        top: 0;
+        left: 250px;
+        right: 0;
+        background-color: #00796b;
+        padding: 15px;
+        color: #fff;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      /* Profile Picture in Dropdown */
+      .profile-pic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .dropdown-menu-end {
+        right: 0;
+        left: auto;
+      }
+
+      .dropdown-toggle::after {
+        display: none;
+      }
+
+      /* Dashboard */
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .card {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Fixed Footer */
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 250px;
+        right: 0;
+        background-color: #00796b;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        z-index: 1000;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Main Layout -->
+    <div class="container-fluid">
+
+      <!-- Sidebar Menu -->
+      <div class="sidebar">
+        <ul>
+          <li><a href="courses.html"><i class="fas fa-book"></i> All Courses</a></li>
+          <li><a href="Groq_front.html"><i class="fas fa-robot"></i> Ask Groq</a></li>
+          <li><a href="online-compiler/public/index.html"><i class="fas fa-code"></i> Compiler & Debugger</a></li>
+          <li><a href="text.html"><i class="fas fa-book-open"></i> Digital Library</a></li>
+          <li><a href="tested.html"><i class="fas fa-tasks"></i> Assignments & Quizzes</a></li>
+        </ul>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="main-content">
+
+        <!-- Fixed Header with Dashboard Title and Profile Dropdown -->
+        <div class="header">
+          <h1>Dashboard</h1>
+
+          <!-- Profile Icon with Dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="< ?php echo $profilePic; ?>" alt="Profile Picture" class="profile-pic"> <!-- Profile picture from session -->
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item" href="EditProfile.html">Update Photograph</a></li>
+              <li><a class="dropdown-item" href="my_courses.html">My Courses</a></li>
+              <li><a class="dropdown-item" href="settings.html">Settings</a></li>
+              <li><a class="dropdown-item" href="reset_password.html">Reset Password</a></li>
+              <li><a class="dropdown-item" href="logout.html">Logout</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Dashboard Section (Graphs, Course Progress) -->
+        <div class="dashboard">
+          <!-- Performance Graphs -->
+          <div class="card">
+            <canvas id="lineChart"></canvas>
+          </div>
+          <div class="card">
+            <canvas id="donutChart"></canvas>
+          </div>
+          <div class="card">
+            <div class="text-center">
+              <h3>Leader Board</h3>
+              <p>Student Rankings</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Course Progress & Recommended Courses -->
+        <div class="dashboard">
+          <div class="card">
+            <h3>Course Progress</h3>
+            <p>Track your ongoing courses and progress.</p>
+          </div>
+          <div class="card">
+            <h3>Recommended Courses</h3>
+            <p>Check out courses based on your learning path.</p>
+          </div>
+          <div class="card">
+            <h3>Your Courses</h3>
+            <p>Access your enrolled courses here.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Fixed Footer -->
+      <footer>
+        &copy; 2024 Personalized Learning Platform | All Rights Reserved
+      </footer>
+
+    </div>
+
+    <!-- Include Bootstrap 5 and Chart.js Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Charts for Dashboard -->
+    <script>
+      // Line Chart (Student Performance Over Time)
+      const lineChart = new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+          labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+          datasets: [{
+            label: 'Performance',
+            data: [65, 59, 80, 81, 56, 55],
+            borderColor: '#00796b',
+            borderWidth: 2,
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+            }
+          }
+        }
+      });
+
+      // Donut Chart (Overall Course Completion)
+      const donutChart = new Chart(document.getElementById('donutChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'In Progress', 'Pending'],
+          datasets: [{
+            label: 'Course Completion',
+            data: [50, 30, 20],
+            backgroundColor: ['#00796b', '#26a69a', '#80cbc4']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+            }
+          }
+        }
+      });
+    </script>
+
+  </body>
+
+  </html>

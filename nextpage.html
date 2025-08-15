@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .greeting {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .greeting h1 {
+      color: #00796b;
+      margin-bottom: 10px;
+    }
+
+    .greeting p {
+      color: #333;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="greeting">
+    <h1 id="welcome-message">Welcome!</h1>
+    <p>We're glad to have you here.</p>
+  </div>
+
+  <script>
+    // Retrieve the username from the query parameter (sent from the login page)
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+
+    // Display the greeting message with the username
+    if (username) {
+      document.getElementById('welcome-message').textContent = `Welcome, ${username}!`;
+    }
+  </script>
+</body>
+</html>

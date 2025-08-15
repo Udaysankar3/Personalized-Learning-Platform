@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Page</title>
+    <style>
+        .quiz-container, .result-container { display: none; }
+        .question-container { margin-bottom: 20px; }
+        table { margin-top: 20px; width: 100%; border-collapse: collapse; }
+        table, th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div id="quizContainer" class="quiz-container">
+        <div id="timer">Time Left: <span id="time">10:00</span></div>
+        <div id="questionContainer" class="question-container"></div>
+        <button onclick="prevQuestion()">Prev</button>
+        <button id="nextButton" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <div id="resultContainer" class="result-container">
+        <h2>Quiz Results</h2>
+        <p id="score"></p>
+        <button onclick="window.location.href = 'index.html'">Go Back to Home</button>
+    </div>
+
+    <script>
+        const subjects = {
+            programming: ["Introduction to Programming Basics", "Functions and Methods", "Loops and Iteration", "OOP Concepts", "Error Handling"],
+            webDevelopment: ["HTML Fundamentals", "CSS Styling", "JavaScript Basics", "Responsive Design", "Advanced JS Concepts"],
+            dataScience: ["Data Science Overview", "Data Analysis Techniques", "Data Visualization with Matplotlib", "Pandas for Data Manipulation", "Machine Learning Basics"],
+            machineLearning: ["What is Machine Learning?", "Supervised Learning", "Unsupervised Learning", "Reinforcement Learning", "Deep Learning Basics"],
+            digitalMarketing: ["Introduction to Digital Marketing", "SEO Fundamentals", "Social Media Marketing", "Email Marketing", "Paid Advertising"]
+        };
+        
+        const questionsBank = {
+            programming: [
+                
+                [
+                    { question: "What does HTML stand for?", options: ["HyperText Markup Language", "Hyperlinks and Text Markup Language", "Home Tool Markup Language", "HyperText Machine Language"], answer: 0 },
+                    { question: "What symbol is used to start a comment in JavaScript?", options: ["//", "#", "<!--", "**"], answer: 0 },
+                    { question: "Which of the following is a JavaScript data type?", options: ["String", "Variable", "Function", "Array"], answer: 0 },
+                    { question: "What is the purpose of the 'let' keyword in JavaScript?", options: ["Define a constant", "Declare a variable", "Define a function", "Create an object"], answer: 1 },
+                    { question: "What is the correct syntax to print 'Hello, World!' in JavaScript?", options: ["print('Hello, World!')", "console.log('Hello, World!')", "document.write('Hello, World!')", "echo 'Hello, World!'"], answer: 1 },
+                    { question: "Which method is used to round a number to the nearest integer?", options: ["round()", "ceil()", "floor()", "toFixed()"], answer: 0 },
+                    { question: "Which of these is NOT a JavaScript operator?", options: ["+", "-", "*", "=>"], answer: 3 },
+                    { question: "Which of these is a correct array definition in JavaScript?", options: ["var arr = [1, 2, 3]", "var arr = (1, 2, 3)", "var arr = {1, 2, 3}", "var arr = 1, 2, 3"], answer: 0 },
+                    { question: "What does OOP stand for?", options: ["Object Oriented Programming", "Object Operated Programming", "Open Operating Protocol", "Optimized Operational Process"], answer: 0 },
+                    { question: "Which of the following is an example of an event in JavaScript?", options: ["click", "textContent", "loop", "variable"], answer: 0 }
+                ],
+                
+                [
+                    { question: "What does a function in JavaScript do?", options: ["Loops a piece of code", "Defines a class", "Defines a reusable block of code", "Displays text on the screen"], answer: 2 },
+                    { question: "Which of the following is the correct way to call a function in JavaScript?", options: ["functionName();", "call functionName();", "execute functionName();", "funcName{}"], answer: 0 },
+                    { question: "Which method is used to add an item to an array in JavaScript?", options: ["push()", "pop()", "shift()", "unshift()"], answer: 0 },
+                    { question: "What will be the output of 2 + 3 + '5' in JavaScript?", options: ["23", "35", "55", "NaN"], answer: 2 },
+                    { question: "How do you define a function in JavaScript?", options: ["function name() {}", "function = name() {}", "function:name {}", "define function() {}"], answer: 0 },
+                    { question: "What does the 'return' keyword do in a function?", options: ["Exits the function", "Defines the function", "Returns a value from the function", "Calls the function"], answer: 2 },
+                    { question: "Which of these methods is used to find the length of an array?", options: ["array.length", "array.size", "array.count", "array.getSize"], answer: 0 },
+                    { question: "What is the default value of an uninitialized variable in JavaScript?", options: ["null", "undefined", "NaN", "false"], answer: 1 },
+                    { question: "Which function is used to parse an integer in JavaScript?", options: ["parseInt()", "parseInteger()", "intParse()", "toInteger()"], answer: 0 },
+                    { question: "Which of these methods is used to remove the first element of an array?", options: ["shift()", "pop()", "unshift()", "slice()"], answer: 0 }
+                ],
+
+            ],
+            webDevelopment: [
+                [
+                    { question: "What does CSS stand for?", options: ["Creative Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets", "Computer Style Sheets"], answer: 1 },
+                    { question: "Which HTML element is used to define the title of a document?", options: ["<title>", "<meta>", "<link>", "<header>"], answer: 0 },
+                ],
+            ],
+        };
+
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let score = { correct: 0, incorrect: 0, total: 10 };
+
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                subject: urlParams.get('subject'),
+                week: parseInt(urlParams.get('week'), 10) || 0
+            };
+        }
+
+        function startQuiz(subject, weekIndex) {
+            document.getElementById('quizContainer').style.display = 'block';
+            currentQuestionIndex = 0;
+            score = { correct: 0, incorrect: 0, total: 10 }; 
+
+            const questions = questionsBank[subject][weekIndex];
+            displayQuestion(currentQuestionIndex, questions);
+            startTimer();
+        }
+
+        function displayQuestion(index, questions) {
+            const questionData = questions[index];
+            const questionContainer = document.getElementById('questionContainer');
+            
+            questionContainer.innerHTML = `<p>Question ${index + 1}: ${questionData.question}</p>`;
+            questionData.options.forEach((option, i) => {
+                questionContainer.innerHTML += `
+                    <label><input type="radio" name="answer" value="${i}"> ${option}</label><br>
+                `;
+            });
+
+            if (index === questions.length - 1) { 
+                document.getElementById('nextButton').textContent = 'Submit Quiz';
+                document.getElementById('nextButton').onclick = () => submitQuiz(questions);
+            } else {
+                document.getElementById('nextButton').textContent = 'Next';
+                document.getElementById('nextButton').onclick = () => nextQuestion(questions);
+            }
+        }
+
+        function startTimer() {
+            let timeLeft = 600; 
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                } else {
+                    timeLeft--;
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    document.getElementById('time').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                }
+            }, 1000);
+        }
+
+        function prevQuestion(questions) {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex, questions);
+            }
+        }
+
+        function nextQuestion(questions) {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (selectedOption) {
+                const answer = parseInt(selectedOption.value);
+                if (answer === questions[currentQuestionIndex].answer) {
+                    score.correct++;
+                } else {
+                    score.incorrect++;
+                }
+            }
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                displayQuestion(currentQuestionIndex, questions);
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('score').innerHTML = `Correct: ${score.correct} | Incorrect: ${score.incorrect}`;
+        }
+
+        // Start quiz on page load
+        const params = getUrlParams();
+        startQuiz(params.subject, params.week);
+    </script>
+
+</body>
+</html>
