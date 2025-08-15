@@ -6,7 +6,7 @@
 <script>
   function searchBooks() {
     const query = document.getElementById('search').value;
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=AIzaSyC4aFyijjXKG9MsGeaxhf7KF9TOyTobQoc`)
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=`)
       .then(response => response.json())
       .then(data => {
         const results = data.items.map(item => `
@@ -20,4 +20,5 @@
       })
       .catch(error => console.error('Error:', error));
   }
+
 </script>
